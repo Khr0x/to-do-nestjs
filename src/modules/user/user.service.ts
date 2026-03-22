@@ -22,14 +22,14 @@ export class UsersService {
    * @throws BadRequestException si ocurre un error al guardar el usuario
    */
     async create(createUserDto: CreateUserDto): Promise<UserDto> {
-        const { email, password, ...rest } = createUserDto;
+        const { email, password, name } = createUserDto;
         const existingUser = await this.userRepository.findOne({ where: { email } });
         if (existingUser) {
             throw new ConflictException('El correo electrónico ya está registrado');
         }
         const hashedPassword = await hashPassword(password);    
         const newUser = this.userRepository.create({
-            ...rest, 
+            nombre: name,
             email, 
             password: hashedPassword,
             activo: true,
@@ -50,7 +50,6 @@ export class UsersService {
      */
     async findOne(filters: FindOneOptions<UserDto>, full: boolean = false): Promise<UserDto> {
         const user = await this.userRepository.findOne({ where: { ...filters.where }, relations: filters.relations });
-
         if (!user) {
         throw new NotFoundException(`Usuario no encontrado`);
         }

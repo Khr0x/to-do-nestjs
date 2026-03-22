@@ -11,7 +11,7 @@ export const envVarsSchema = Joi.object({
   DB_PASSWORD: Joi.string().required(),
   DB_NAME: Joi.string().required(),
   JWT_SECRET: Joi.string().required(),
-  JWT_EXPIRATION: Joi.string().default('1d'),
+  JWT_EXPIRATION: Joi.number().default(86400),
   REFRESH_TOKEN_EXPIRES_IN: Joi.string().default('7d'),
   COOKIE_DOMAIN: Joi.string().optional(),
 });

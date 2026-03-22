@@ -1,14 +1,11 @@
 import { Module } from "@nestjs/common";
-import { DatabaseModule } from "../../../database/database.module";
-import { refreshTokenProviders } from "./refresh-token.providers";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { RefreshToken } from "../entities/refresh-token.entity";
 import { RefreshTokenService } from "./refresh-token.service"; 
 
 @Module({
-    imports: [DatabaseModule],
-    providers: [
-        ...refreshTokenProviders,
-        RefreshTokenService
-    ],
+    imports: [TypeOrmModule.forFeature([RefreshToken])],
+    providers: [RefreshTokenService],
     exports: [RefreshTokenService]
 })
 export class RefreshTokenModule {}

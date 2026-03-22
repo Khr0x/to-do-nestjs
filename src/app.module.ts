@@ -6,6 +6,9 @@ import { envVarsSchema } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { TodoModule } from './modules/todo/todo.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CsrfGuard } from './common/guards/csrf.guard';
 
 @Module({
   imports: [
@@ -18,11 +21,26 @@ import { AuthModule } from './modules/auth/auth.module';
         abortEarly: true 
       },
     }),
+    ThrottlerModule.forRoot({
+     throttlers: [
+      {
+        ttl: 60000,
+        limit: 100,
+      }
+     ]
+    }),
     DatabaseModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    TodoModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+        provide: 'APP_GUARD',
+        useClass: CsrfGuard,
+    },
+  ],
 })
 export class AppModule {}

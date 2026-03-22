@@ -130,7 +130,12 @@ export class AuthService {
     return token;
   }
 
-
-
-
+  /**
+   * Revoca todos los refresh tokens de un usuario (usado en logout)
+   * @param userId - ID del usuario
+   * @return void
+   */
+  async logout(userId: string): Promise<void> {
+    await this.refreshTokenService.revokeAllUserTokens(userId);
+  }
 }

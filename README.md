@@ -191,7 +191,7 @@ DATABASE_URL=postgresql://user:password@localhost:5432/dbname
 
 # AUTH CONFIG
 JWT_SECRET=tu-clave-secreta
-JWT_EXPIRATION=24h
+JWT_EXPIRATION=86400
 BCRYPT_SALT_ROUNDS=10
 ```
 

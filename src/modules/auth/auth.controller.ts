@@ -1,12 +1,14 @@
-import { Body, Controller, HttpCode, Post, Req, Res, UseGuards, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post, Req, Request, Res, UseGuards, ValidationPipe } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { ConfigService } from "@nestjs/config";
 import { LocalAuthGuard } from "../../common/guards/local-auth.guard";
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { LoginDto } from "./dtos/login.dto";
 import { CreateUserDto } from "../user/dtos/create-user.dto";
+import { ThrottlerGuard } from "@nestjs/throttler";
+import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 
 
+@UseGuards(ThrottlerGuard)
 @Controller('/v1/auth')
 export class AuthController {
   constructor(
@@ -24,6 +26,7 @@ export class AuthController {
    */
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @HttpCode(200)
   async login(
     @Body(ValidationPipe) loginDto: LoginDto,
     @Req() req: Request,   
@@ -36,7 +39,7 @@ export class AuthController {
     response.cookie('access_token', authResult.accessToken, authResult.cookies.access);
     response.cookie('refresh_token', authResult.refreshToken, authResult.cookies.refresh);
 
-    return {  message: 'Login successful' };
+    return true;
 
   }
 
@@ -52,5 +55,37 @@ export class AuthController {
   async register(@Body() createUserDto: CreateUserDto) {
     await this.authService.register(createUserDto);
   }
+
+  /**
+   * Endpoint para obtener el perfil del usuario autenticado
+   * Usa JwtAuthGuard para proteger el endpoint y asegurar que solo usuarios autenticados puedan acceder
+   * @param req - Objeto Request para acceder al usuario autenticado por el guard
+   * @returns El perfil del usuario autenticado
+   */
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getProfile(@Request() req: any) {
+    return req.user;
+  }
+
+
+  /**
+   * Endpoint para logout de usuarios
+   * Usa JwtAuthGuard para asegurar que solo usuarios autenticados puedan hacer logout
+   * Limpia las cookies de acceso y refresh token, y llama al servicio de autenticación para invalidar el refresh token
+   * @param req - Objeto Request para acceder al usuario autenticado por el guard
+   * @param response - Objeto Response para limpiar las cookies
+   * @returns Mensaje de éxito (las cookies se limpian en la respuesta)
+   */
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @HttpCode(200)
+  async logout(@Req() req: any, @Res({ passthrough: true }) response: Response) {
+    response.clearCookie('access_token');
+    response.clearCookie('refresh_token');
+    await this.authService.logout(req.user.userId);
+    return true;
+  }
+
 
 }

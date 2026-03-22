@@ -1,4 +1,5 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { RefreshToken } from "../entities/refresh-token.entity";
 import { User } from "../../user/entities/user.entity";
@@ -8,7 +9,7 @@ import { RefreshTokenMapper } from "./mappers/refresh-token.mapper";
 @Injectable()
 export class RefreshTokenService {
   constructor(
-    @Inject('REFRESH_TOKEN_REPOSITORY')
+    @InjectRepository(RefreshToken)
     private refreshTokenRepo: Repository<RefreshToken>,
   ) {}
 
