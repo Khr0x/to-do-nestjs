@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Req, Request, Res, UseGuards, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post, Req, Request, Res, UnauthorizedException, UseGuards, ValidationPipe } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "../../common/guards/local-auth.guard";
 import type { Response } from 'express';
@@ -87,5 +87,37 @@ export class AuthController {
     return true;
   }
 
+  /**
+   * Endpoint para refrescar tokens de acceso usando el refresh token
+   * Recibe el refresh token desde las cookies, y si es válido, genera nuevos tokens y los envía en cookies seguras
+   * Si el refresh token no es válido, limpia las cookies y lanza una excepción de no autorizado
+   * @param req - Objeto Request para acceder a las cookies
+   * @param response - Objeto Response para configurar las nuevas cookies o limpiar las existentes
+   * @returns Mensaje de éxito (los nuevos tokens se envían en cookies)
+   */
+  @Post('refresh')
+  async refresh(
+    @Request() req: any,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const oldRefreshToken = req.cookies['refresh_token'];
+    
+    if (!oldRefreshToken) {
+      throw new UnauthorizedException('No refresh token found');
+    }
 
+    try {
+        const { accessToken, refreshToken, cookies } = await this.authService.refresh(oldRefreshToken);
+        response.cookie('access_token', accessToken, cookies.access);
+        response.cookie('refresh_token', refreshToken, cookies.refresh);
+
+        return { message: 'Token refreshed' };  
+    } catch (error) {
+      response.clearCookie('access_token');
+      response.clearCookie('refresh_token');
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+  }
+  
 }

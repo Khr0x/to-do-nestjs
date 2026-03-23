@@ -8,7 +8,6 @@ import { UsersModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TodoModule } from './modules/todo/todo.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { CsrfGuard } from './common/guards/csrf.guard';
 
 @Module({
   imports: [
@@ -36,11 +35,7 @@ import { CsrfGuard } from './common/guards/csrf.guard';
   ],
   controllers: [AppController],
   providers: [
-    AppService,
-    {
-        provide: 'APP_GUARD',
-        useClass: CsrfGuard,
-    },
+    AppService
   ],
 })
 export class AppModule {}

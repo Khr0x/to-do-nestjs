@@ -1,4 +1,17 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateTodoDto } from './create-todo.dto';
+import { IsString, IsEnum, IsOptional, IsBoolean, MaxLength } from 'class-validator';
+import { Prioridad } from '../entities/todo.entity';
 
-export class UpdateTodoDto extends PartialType(CreateTodoDto) {}
+export class UpdateTodoDto {
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  nombre?: string;
+
+  @IsEnum(Prioridad)
+  @IsOptional()
+  prioridad?: Prioridad;
+
+  @IsBoolean()
+  @IsOptional()
+  finalizada?: boolean;
+}

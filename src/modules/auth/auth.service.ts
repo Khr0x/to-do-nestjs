@@ -131,6 +131,56 @@ export class AuthService {
   }
 
   /**
+   * Refresca los tokens de acceso y refresh token
+   * @param oldToken - Token de refresh antiguo
+   * @returns Nuevos tokens de acceso y refresh
+   */
+  async refresh(oldToken: string): Promise<AuthResponse> {
+
+    const payload = await this.refreshTokenService.findValidToken(oldToken);
+    if (payload) {
+        const foundUser = await this.usersService.findOne({ where: { email: payload.userEmail } });
+        if (!foundUser) {
+          throw new UnauthorizedException('Credenciales inválidas');
+        }
+
+        const newAccessToken = this.jwtService.sign({ 
+          sub: payload.userId, 
+          email: payload.userEmail,
+          name: foundUser.name
+        });
+        const newRefreshToken = await this.generateRefreshToken(payload.userId);
+
+        const isProduction = this.configService.get('NODE_ENV') === 'production';
+        const cookieDomain = this.configService.get('COOKIE_DOMAIN');
+
+        const baseCookie = {
+          httpOnly: true,
+          secure: isProduction,
+          sameSite: (isProduction ? 'strict' : 'lax') as 'strict' | 'lax',
+          domain: cookieDomain || undefined,
+          path: '/',
+        };
+
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+        cookies: {
+          access: {
+            ...baseCookie,
+            maxAge: 24 * 60 * 60 * 1000, // 24 horas
+          },
+          refresh: {
+            ...baseCookie,
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+          },
+        },
+      };
+    }
+    throw new UnauthorizedException('Refresh token logic needs complete implementation'); 
+  }
+
+  /**
    * Revoca todos los refresh tokens de un usuario (usado en logout)
    * @param userId - ID del usuario
    * @return void

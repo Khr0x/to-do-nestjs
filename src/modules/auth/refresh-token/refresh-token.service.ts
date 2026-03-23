@@ -25,7 +25,7 @@ export class RefreshTokenService {
     return this.refreshTokenRepo.save(refreshToken);
   }
 
-  async findValidToken(token: string): Promise<RefreshTokenDto| null> {
+  async findValidToken(token: string): Promise< RefreshTokenDto | null > {
     const refreshToken = await this.refreshTokenRepo.findOne({
       where: { token, revoked: false },
       relations: ['user'],
