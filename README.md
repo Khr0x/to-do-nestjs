@@ -2,6 +2,16 @@
 
 API REST backend construida con NestJS para aplicación de gestión de tareas.
 
+## Stack Tecnológico
+
+- **Framework**: NestJS
+- **Lenguaje**: TypeScript
+- **Base de Datos**: PostgreSQL con TypeORM
+- **Autenticación**: Passport.js (JWT + Local)
+- **Hash de Contraseñas**: bcrypt
+- **Validación**: class-validator + Joi
+- **Gestor de Paquetes**: pnpm
+
 ## Requisitos Previos
 
 ### Para ejecutar con Docker:
@@ -53,7 +63,7 @@ pnpm run migration:run
 pnpm run start:dev
 ```
 
-🎉 Aplicación disponible en: **http://localhost:3000**
+Aplicación disponible en: **http://localhost:3000**
 
 ## 🔧 Comandos Útiles
 
@@ -413,13 +423,3 @@ GET /v1/todo/list?page=1&limit=10&prioridad=alta&finalizada=false
 ```
 
 ---
-
-## Stack Tecnológico
-
-- **Framework**: NestJS
-- **Lenguaje**: TypeScript
-- **Base de Datos**: PostgreSQL con TypeORM
-- **Autenticación**: Passport.js (JWT + Local)
-- **Hash de Contraseñas**: bcrypt
-- **Validación**: class-validator + Joi
-- **Gestor de Paquetes**: pnpm
