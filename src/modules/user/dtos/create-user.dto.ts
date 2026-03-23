@@ -1,15 +1,15 @@
-import { IsArray, IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString, Matches, MinLength } from "class-validator";
 
 export class CreateUserDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'El nombre debe ser una cadena de texto' })
+  @IsNotEmpty({ message: 'El nombre es obligatorio' })
   name: string;
 
   @IsEmail({}, { message: 'El correo debe tener un formato válido' })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'El correo es obligatorio' })
   email: string;
 
-  @IsString()
+  @IsString({ message: 'La contraseña debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'La contraseña es requerida' })
   @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
   @Matches(

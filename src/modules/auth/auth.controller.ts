@@ -52,7 +52,7 @@ export class AuthController {
    */
   @Post('register')
   @HttpCode(201)
-  async register(@Body() createUserDto: CreateUserDto) {
+  async register(@Body(ValidationPipe) createUserDto: CreateUserDto) {
     await this.authService.register(createUserDto);
   }
 
