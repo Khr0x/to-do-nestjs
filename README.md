@@ -24,7 +24,7 @@ cp .env.example .env
 #    (importante para Docker)
 
 # 3. Iniciar con Docker
-docker-compose up
+docker compose up
 ```
 
 Aplicación disponible en: **http://localhost:3000**

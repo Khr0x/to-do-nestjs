@@ -1,6 +1,5 @@
 # Dependencias
 node_modules/
-pnpm-lock.yaml
 
 # Archivos compilados
 dist/
