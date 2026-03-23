@@ -38,6 +38,7 @@ services:
       - .env
     environment:
       DB_HOST: postgres
+      CI: "true"
     volumes:
       - .:/app
       - /app/node_modules
@@ -46,7 +47,7 @@ services:
         condition: service_healthy
     networks:
       - todo-network
-    command: sh -c "pnpm install && pnpm run migration:run && pnpm run start:dev"
+    command: sh -c "pnpm install --frozen-lockfile && pnpm run migration:run && pnpm run start:dev"
 
 # ===================
 # Networks
